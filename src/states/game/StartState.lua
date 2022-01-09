@@ -10,8 +10,8 @@
 
 StartState = Class{__includes = BaseState}
 
-function StartState:init()
-    self.map = LevelMaker.generate(100, 10)
+function StartState:init(levelMaker)
+    self.map = levelMaker:generate(100, 10)
     self.background = math.random(3)
 end
 

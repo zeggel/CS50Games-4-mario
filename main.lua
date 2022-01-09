@@ -41,9 +41,11 @@ function love.load(args)
         canvas = false
     })
 
+    local levelMaker = LevelMaker(LevelGeneratorRandomizer())
+
     gStateMachine = StateMachine {
-        ['start'] = function() return StartState() end,
-        ['play'] = function() return PlayState() end
+        ['start'] = function() return StartState(levelMaker) end,
+        ['play'] = function() return PlayState(levelMaker) end
     }
     gStateMachine:change('start')
 

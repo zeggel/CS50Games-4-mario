@@ -10,9 +10,11 @@
 
 LevelMaker = Class{}
 
-function LevelMaker.generate(width, height)
-    local randomizer = LevelGeneratorRandomizer()
+function LevelMaker:init(randomizer)
+    self.randomizer = randomizer
+end
 
+function LevelMaker:generate(width, height)
     local tiles = {}
     local entities = {}
     local objects = {}
@@ -21,8 +23,8 @@ function LevelMaker.generate(width, height)
     
     -- whether we should draw our tiles with toppers
     local topper = true
-    local tileset = randomizer:getTileset()
-    local topperset = randomizer:getTopperset()
+    local tileset = self.randomizer:getTileset()
+    local topperset = self.randomizer:getTopperset()
 
     -- insert blank tables into tiles for later access
     for x = 1, height do
@@ -40,7 +42,7 @@ function LevelMaker.generate(width, height)
         end
 
         -- chance to just be emptiness
-        if x > 1 and randomizer:isChasm() then
+        if x > 1 and self.randomizer:isChasm() then
             for y = 7, height do
                 table.insert(tiles[y],
                     Tile(x, y, tileID, nil, tileset, topperset))
@@ -57,11 +59,11 @@ function LevelMaker.generate(width, height)
             end
 
             -- chance to generate a pillar
-            if randomizer:isPillar() then
+            if self.randomizer:isPillar() then
                 blockHeight = 2
                 
                 -- chance to generate bush on pillar
-                if randomizer:isBushOnPillar() then
+                if self.randomizer:isBushOnPillar() then
                     table.insert(objects,
                         GameObject {
                             texture = 'bushes',
@@ -71,7 +73,7 @@ function LevelMaker.generate(width, height)
                             height = 16,
                             
                             -- select random frame from bush_ids whitelist, then random row for variance
-                            frame = randomizer:getBushFrameId(),
+                            frame = self.randomizer:getBushFrameId(),
                             collidable = false
                         }
                     )
@@ -83,7 +85,7 @@ function LevelMaker.generate(width, height)
                 tiles[7][x].topper = nil
             
             -- chance to generate bushes
-            elseif randomizer:isBush() then
+            elseif self.randomizer:isBush() then
                 table.insert(objects,
                     GameObject {
                         texture = 'bushes',
@@ -91,14 +93,14 @@ function LevelMaker.generate(width, height)
                         y = (6 - 1) * TILE_SIZE,
                         width = 16,
                         height = 16,
-                        frame = randomizer:getBushFrameId(),
+                        frame = self.randomizer:getBushFrameId(),
                         collidable = false
                     }
                 )
             end
 
             -- chance to spawn a block
-            if randomizer:isJumpBlock() then
+            if self.randomizer:isJumpBlock() then
                 table.insert(objects,
 
                     -- jump block
@@ -110,7 +112,7 @@ function LevelMaker.generate(width, height)
                         height = 16,
 
                         -- make it a random variant
-                        frame = randomizer:getJumpBlockFrameId(),
+                        frame = self.randomizer:getJumpBlockFrameId(),
                         collidable = true,
                         hit = false,
                         solid = true,
@@ -122,7 +124,7 @@ function LevelMaker.generate(width, height)
                             if not obj.hit then
 
                                 -- chance to spawn gem, not guaranteed
-                                if randomizer:isSpawnGem() then
+                                if self.randomizer:isSpawnGem() then
 
                                     -- maintain reference so we can set it to nil
                                     local gem = GameObject {
@@ -131,7 +133,7 @@ function LevelMaker.generate(width, height)
                                         y = (blockHeight - 1) * TILE_SIZE - 4,
                                         width = 16,
                                         height = 16,
-                                        frame = randomizer:getGemFrameId(),
+                                        frame = self.randomizer:getGemFrameId(),
                                         collidable = true,
                                         consumable = true,
                                         solid = false,
