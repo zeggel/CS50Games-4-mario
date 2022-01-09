@@ -22,7 +22,13 @@
 love.graphics.setDefaultFilter('nearest', 'nearest')
 require 'src/Dependencies'
 
-function love.load()
+function love.load(args)
+    if args[1] == '--test' then
+        local lu = require 'lib/luaunit'
+        require 'tests/Runner'
+        os.exit(lu.LuaUnit.run('--pattern', args[2] or 'test'))
+    end
+
     love.graphics.setFont(gFonts['medium'])
     love.window.setTitle('Super 50 Bros.')
 
