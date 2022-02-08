@@ -17,13 +17,13 @@ end
 
 ---Returns true if need a chasm
 ---@return boolean
-function LevelGeneratorRandomizer:isChasm()
+function LevelGeneratorRandomizer:isChasm(column)
     return math.random(7) == 1
 end
 
 ---Returns true in need a pillar
 ---@return boolean
-function LevelGeneratorRandomizer:isPillar()
+function LevelGeneratorRandomizer:isPillar(column)
     return math.random(8) == 1
 end
 

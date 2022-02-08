@@ -3,24 +3,64 @@ local lu = require 'lib/luaunit'
 local TEST_TILESET = 1
 local TEST_TOPPERSET = 2
 
-local function createGameLevel(width, height, tiles, objects, entities)
+local function schemaToElements(schema)
+    local result = {}
+    for schemaRow in string.gmatch(string.gsub(schema, '%s*$', ''), '[^\n]+') do
+        local row = {}
+        for element in string.gmatch(string.gsub(schemaRow, '%s*', ''), '.') do
+            table.insert(row, element)
+        end
+        table.insert(result, row)
+    end
+    return result
+end
+
+local function elementsToTiles(elements)
+    local tiles = {}
+    for y, row in pairs(elements) do
+        local tilesRow = {}
+        for x, element in pairs(row) do
+            local tileId = TILE_ID_EMPTY
+            local topper = nil
+            if element == '#' then
+                tileId = TILE_ID_GROUND
+            elseif element == '_' then
+                tileId = TILE_ID_GROUND
+                topper = true
+            elseif element == '.' then
+                tileId = TILE_ID_EMPTY
+            end
+            local tile = Tile(x, y, tileId, topper, TEST_TILESET, TEST_TOPPERSET)
+            table.insert(tilesRow, tile)
+        end
+        table.insert(tiles, tilesRow)
+    end
+    return tiles
+end
+
+local function schemaToTiles(schema)
+    return elementsToTiles(schemaToElements(schema))
+end
+
+local function createGameLevel(width, height, schema)
+    local entities = {}
+    local objects = {}
     local map = TileMap(width, height)
-    map.tiles = tiles or {}
-    return GameLevel(entities or {}, objects or {}, map)
+    map.tiles = schemaToTiles(schema)
+    return GameLevel(entities, objects, map)
 end
 
 TestLevelMaker = {}
 
-FakeRandomizer = Class{__includes = LevelGeneratorRandomizer}
-
 function TestLevelMaker:test_generate_oneGroundColumnWithoutObjects()
+    local FakeRandomizer = Class{__includes = LevelGeneratorRandomizer}
     local randomizer = FakeRandomizer()
     function randomizer:isChasm() return false end
     function randomizer:isPillar() return false end
     function randomizer:isBush() return false end
     function randomizer:isJumpBlock() return false end
-    function randomizer:getTileset() return 1 end
-    function randomizer:getTopperset() return 2 end
+    function randomizer:getTileset() return TEST_TILESET end
+    function randomizer:getTopperset() return TEST_TOPPERSET end
 
     local levelMaker = LevelMaker(randomizer)
 
@@ -38,7 +78,52 @@ function TestLevelMaker:test_generate_oneGroundColumnWithoutObjects()
         {Tile(1, 8, TILE_ID_GROUND, nil, TEST_TILESET, TEST_TOPPERSET)},
         {Tile(1, 9, TILE_ID_GROUND, nil, TEST_TILESET, TEST_TOPPERSET)},
     }
-    local expected = createGameLevel(width, height, tiles)
+    local expected = createGameLevel(width, height, [[
+        .
+        .
+        .
+        .
+        .
+        .
+        _
+        #
+        #
+    ]])
+
+    lu.assertEquals(levelMaker:generate(width, height), expected)
+end
+
+function TestLevelMaker:test_generate_simpleLevel()
+    local FakeRandomizer = Class{__includes = LevelGeneratorRandomizer}
+    local randomizer = FakeRandomizer()
+    function randomizer:isChasm(column)
+        return column == 3 or column == 4
+    end
+    function randomizer:isPillar(column)
+        return column == 2 or column == 6 or column == 7
+    end
+    function randomizer:isBush() return false end
+    function randomizer:isBushOnPillar() return false end
+    function randomizer:isJumpBlock() return false end
+    function randomizer:getTileset() return TEST_TILESET end
+    function randomizer:getTopperset() return TEST_TOPPERSET end
+
+    local levelMaker = LevelMaker(randomizer)
+
+    local width = 7
+    local height = 9
+
+    local expected = createGameLevel(width, height, [[
+        .......
+        .......
+        .......
+        .......
+        ._...__
+        .#...##
+        _#.._##
+        ##..###
+        ##..###
+    ]])
 
     lu.assertEquals(levelMaker:generate(width, height), expected)
 end

@@ -42,7 +42,7 @@ function LevelMaker:generate(width, height)
         end
 
         -- chance to just be emptiness
-        if x > 1 and self.randomizer:isChasm() then
+        if x > 1 and self.randomizer:isChasm(x) then
             for y = 7, height do
                 table.insert(tiles[y],
                     Tile(x, y, tileID, nil, tileset, topperset))
@@ -59,7 +59,7 @@ function LevelMaker:generate(width, height)
             end
 
             -- chance to generate a pillar
-            if self.randomizer:isPillar() then
+            if self.randomizer:isPillar(x) then
                 blockHeight = 2
                 
                 -- chance to generate bush on pillar
