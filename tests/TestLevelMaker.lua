@@ -2,6 +2,7 @@ local lu = require 'lib/luaunit'
 
 local TEST_TILESET = 1
 local TEST_TOPPERSET = 2
+local TEST_BUSH_FRAME_ID = 3
 
 local function schemaToElements(schema)
     local result = {}
@@ -24,7 +25,7 @@ local function elementsToTiles(elements)
             local topper = nil
             if element == '#' then
                 tileId = TILE_ID_GROUND
-            elseif element == '_' then
+            elseif element == '_' or element == '^' then
                 tileId = TILE_ID_GROUND
                 topper = true
             elseif element == '.' then
@@ -38,15 +39,37 @@ local function elementsToTiles(elements)
     return tiles
 end
 
+local function elementsToObjects(elements)
+    local objects = {}
+    for y, row in pairs(elements) do
+        for x, element in pairs(row) do
+            if element == '^' then
+                local bush = GameObject {
+                    texture = 'bushes',
+                    x = (x - 1) * TILE_SIZE,
+                    y = (y - 2) * TILE_SIZE,
+                    width = 16,
+                    height = 16,
+                    frame = TEST_BUSH_FRAME_ID,
+                    collidable = false
+                }
+                table.insert(objects, 1, bush)
+            end
+        end
+    end
+    return objects
+end
+
 local function schemaToTiles(schema)
     return elementsToTiles(schemaToElements(schema))
 end
 
 local function createGameLevel(width, height, schema)
+    local elements = schemaToElements(schema)
     local entities = {}
-    local objects = {}
+    local objects = elementsToObjects(elements)
     local map = TileMap(width, height)
-    map.tiles = schemaToTiles(schema)
+    map.tiles = elementsToTiles(elements)
     return GameLevel(entities, objects, map)
 end
 
@@ -102,11 +125,16 @@ function TestLevelMaker:test_generate_simpleLevel()
     function randomizer:isPillar(column)
         return column == 2 or column == 6 or column == 7
     end
-    function randomizer:isBush() return false end
-    function randomizer:isBushOnPillar() return false end
+    function randomizer:isBush(column)
+        return column == 5
+    end
+    function randomizer:isBushOnPillar(column)
+        return column == 7
+    end
     function randomizer:isJumpBlock() return false end
     function randomizer:getTileset() return TEST_TILESET end
     function randomizer:getTopperset() return TEST_TOPPERSET end
+    function randomizer:getBushFrameId() return TEST_BUSH_FRAME_ID end
 
     local levelMaker = LevelMaker(randomizer)
 
@@ -118,9 +146,9 @@ function TestLevelMaker:test_generate_simpleLevel()
         .......
         .......
         .......
-        ._...__
+        ._..._^
         .#...##
-        _#.._##
+        _#..^##
         ##..###
         ##..###
     ]])

@@ -63,7 +63,7 @@ function LevelMaker:generate(width, height)
                 blockHeight = 2
                 
                 -- chance to generate bush on pillar
-                if self.randomizer:isBushOnPillar() then
+                if self.randomizer:isBushOnPillar(x) then
                     table.insert(objects,
                         GameObject {
                             texture = 'bushes',
@@ -85,7 +85,7 @@ function LevelMaker:generate(width, height)
                 tiles[7][x].topper = nil
             
             -- chance to generate bushes
-            elseif self.randomizer:isBush() then
+            elseif self.randomizer:isBush(x) then
                 table.insert(objects,
                     GameObject {
                         texture = 'bushes',

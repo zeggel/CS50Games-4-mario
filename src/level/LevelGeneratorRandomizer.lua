@@ -29,7 +29,7 @@ end
 
 ---Returns true if need a bush on the pillar
 ---@return boolean
-function LevelGeneratorRandomizer:isBushOnPillar()
+function LevelGeneratorRandomizer:isBushOnPillar(column)
     return math.random(8) == 1
 end
 
@@ -63,6 +63,6 @@ function LevelGeneratorRandomizer:getGemFrameId()
     return math.random(#GEMS)
 end
 
-function LevelGeneratorRandomizer:isBush()
+function LevelGeneratorRandomizer:isBush(column)
     return math.random(8) == 1
 end
