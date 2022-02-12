@@ -100,67 +100,14 @@ function LevelMaker:generate(width, height)
             end
 
             -- chance to spawn a block
-            if self.randomizer:isJumpBlock() then
-                table.insert(objects,
-
-                    -- jump block
-                    GameObject {
-                        texture = 'jump-blocks',
-                        x = (x - 1) * TILE_SIZE,
-                        y = (blockHeight - 1) * TILE_SIZE,
-                        width = 16,
-                        height = 16,
-
-                        -- make it a random variant
-                        frame = self.randomizer:getJumpBlockFrameId(),
-                        collidable = true,
-                        hit = false,
-                        solid = true,
-
-                        -- collision function takes itself
-                        onCollide = function(obj)
-
-                            -- spawn a gem if we haven't already hit the block
-                            if not obj.hit then
-
-                                -- chance to spawn gem, not guaranteed
-                                if self.randomizer:isSpawnGem() then
-
-                                    -- maintain reference so we can set it to nil
-                                    local gem = GameObject {
-                                        texture = 'gems',
-                                        x = (x - 1) * TILE_SIZE,
-                                        y = (blockHeight - 1) * TILE_SIZE - 4,
-                                        width = 16,
-                                        height = 16,
-                                        frame = self.randomizer:getGemFrameId(),
-                                        collidable = true,
-                                        consumable = true,
-                                        solid = false,
-
-                                        -- gem has its own function to add to the player's score
-                                        onConsume = function(player, object)
-                                            gSounds['pickup']:play()
-                                            player.score = player.score + 100
-                                        end
-                                    }
-                                    
-                                    -- make the gem move up from the block and play a sound
-                                    Timer.tween(0.1, {
-                                        [gem] = {y = (blockHeight - 2) * TILE_SIZE}
-                                    })
-                                    gSounds['powerup-reveal']:play()
-
-                                    table.insert(objects, gem)
-                                end
-
-                                obj.hit = true
-                            end
-
-                            gSounds['empty-block']:play()
-                        end
-                    }
-                )
+            if self.randomizer:isJumpBlock(x) then
+                local gem
+                if self.randomizer:isSpawnGem(x) or true then
+                    gem = Gem(x, blockHeight, self.randomizer:getGemFrameId())
+                    table.insert(objects, gem)
+                end
+                local crate = Crate(x, blockHeight, self.randomizer:getJumpBlockFrameId(), gem)
+                table.insert(objects, crate)
             end
         end
     end
