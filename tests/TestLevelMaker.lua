@@ -1,8 +1,21 @@
 local lu = require 'lib/luaunit'
 
+--[[
+    . empty
+    # ground
+    _ topper
+    ^ bush
+    o empty crate
+    * gem crate
+    b blocked
+    k key crate
+--]]
+
 local TEST_TILESET = 1
 local TEST_TOPPERSET = 2
 local TEST_BUSH_FRAME_ID = 3
+local TEST_CRATE_FRAME_ID = 4
+local TEST_GEM_FRAME_ID = 5
 
 local function schemaToElements(schema)
     local result = {}
@@ -54,14 +67,18 @@ local function elementsToObjects(elements)
                     collidable = false
                 }
                 table.insert(objects, 1, bush)
+            elseif element == '*' then
+                local gem = Gem(x, y, TEST_GEM_FRAME_ID)
+                table.insert(objects, gem)
+                local crate = Crate(x, y, TEST_CRATE_FRAME_ID, gem)
+                table.insert(objects, crate)
+            elseif element == 'o' then
+                local crate = Crate(x, y, TEST_CRATE_FRAME_ID)
+                table.insert(objects, crate)
             end
         end
     end
     return objects
-end
-
-local function schemaToTiles(schema)
-    return elementsToTiles(schemaToElements(schema))
 end
 
 local function createGameLevel(width, height, schema)
@@ -71,6 +88,23 @@ local function createGameLevel(width, height, schema)
     local map = TileMap(width, height)
     map.tiles = elementsToTiles(elements)
     return GameLevel(entities, objects, map)
+end
+
+local function assertLevelEquals(actual, expected)
+    local function sortObjects(one, other)
+        if one.texture == other.texture then
+            if one.x == other.x then
+                return one.y < other.y
+            else
+                return one.x < other.x
+            end
+        else
+            return one.texture < other.texture
+        end
+    end
+    table.sort(actual.objects, sortObjects)
+    table.sort(expected.objects, sortObjects)
+    lu.assertEquals(actual, expected)
 end
 
 TestLevelMaker = {}
@@ -131,10 +165,17 @@ function TestLevelMaker:test_generate_simpleLevel()
     function randomizer:isBushOnPillar(column)
         return column == 7
     end
-    function randomizer:isJumpBlock() return false end
+    function randomizer:isJumpBlock(column)
+        return column == 5 or column == 7
+    end
+    function randomizer:isSpawnGem(column)
+        return column == 5
+    end
     function randomizer:getTileset() return TEST_TILESET end
     function randomizer:getTopperset() return TEST_TOPPERSET end
     function randomizer:getBushFrameId() return TEST_BUSH_FRAME_ID end
+    function randomizer:getJumpBlockFrameId() return TEST_CRATE_FRAME_ID end
+    function randomizer:getGemFrameId() return TEST_GEM_FRAME_ID end
 
     local levelMaker = LevelMaker(randomizer)
 
@@ -143,9 +184,9 @@ function TestLevelMaker:test_generate_simpleLevel()
 
     local expected = createGameLevel(width, height, [[
         .......
+        ......o
         .......
-        .......
-        .......
+        ....*..
         ._..._^
         .#...##
         _#..^##
@@ -153,5 +194,5 @@ function TestLevelMaker:test_generate_simpleLevel()
         ##..###
     ]])
 
-    lu.assertEquals(levelMaker:generate(width, height), expected)
+    assertLevelEquals(levelMaker:generate(width, height), expected)
 end

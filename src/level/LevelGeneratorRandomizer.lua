@@ -47,13 +47,13 @@ end
 
 ---Returns true if need a jump block
 ---@return boolean
-function LevelGeneratorRandomizer:isJumpBlock()
+function LevelGeneratorRandomizer:isJumpBlock(column)
     return math.random(10) == 1
 end
 
 ---Returns true if need spawn gem in block
 ---@return boolean
-function LevelGeneratorRandomizer:isSpawnGem()
+function LevelGeneratorRandomizer:isSpawnGem(column)
     return math.random(5) == 1
 end
 

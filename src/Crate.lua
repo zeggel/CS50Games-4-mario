@@ -21,6 +21,7 @@ function Crate:onCollide()
 
         if self.innerObject then
             self.innerObject.consumable = true
+            self.innerObject.collidable = true
             -- make the inner object move up from the block and play a sound
             Timer.tween(0.1, {
                 [self.innerObject] = {y = self.y - TILE_SIZE}

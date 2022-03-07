@@ -102,7 +102,7 @@ function LevelMaker:generate(width, height)
             -- chance to spawn a block
             if self.randomizer:isJumpBlock(x) then
                 local gem
-                if self.randomizer:isSpawnGem(x) or true then
+                if self.randomizer:isSpawnGem(x) then
                     gem = Gem(x, blockHeight, self.randomizer:getGemFrameId())
                     table.insert(objects, gem)
                 end
