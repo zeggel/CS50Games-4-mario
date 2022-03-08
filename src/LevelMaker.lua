@@ -20,6 +20,9 @@ function LevelMaker:generate(width, height)
     local objects = {}
 
     local tileID = TILE_ID_GROUND
+
+    local lockSpawned = false
+    local lockFrameId = self.randomizer:getLockFrameId()
     
     -- whether we should draw our tiles with toppers
     local topper = true
@@ -108,6 +111,10 @@ function LevelMaker:generate(width, height)
                 end
                 local crate = Crate(x, blockHeight, self.randomizer:getJumpBlockFrameId(), gem)
                 table.insert(objects, crate)
+            elseif not lockSpawned and self.randomizer:isSpawnLock(x) then
+                local lock = Lock(x, blockHeight, lockFrameId)
+                table.insert(objects, lock)
+                lockSpawned = true
             end
         end
     end

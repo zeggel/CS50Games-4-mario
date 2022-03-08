@@ -66,3 +66,11 @@ end
 function LevelGeneratorRandomizer:isBush(column)
     return math.random(8) == 1
 end
+
+function LevelGeneratorRandomizer:isSpawnLock(column)
+    return math.random(5) == 1
+end
+
+function LevelGeneratorRandomizer:getLockFrameId()
+    return LOCK_IDS[math.random(#LOCK_IDS)]
+end

@@ -16,6 +16,7 @@ local TEST_TOPPERSET = 2
 local TEST_BUSH_FRAME_ID = 3
 local TEST_CRATE_FRAME_ID = 4
 local TEST_GEM_FRAME_ID = 5
+local TEST_LOCK_FRAME_ID = 6
 
 local function schemaToElements(schema)
     local result = {}
@@ -75,6 +76,9 @@ local function elementsToObjects(elements)
             elseif element == 'o' then
                 local crate = Crate(x, y, TEST_CRATE_FRAME_ID)
                 table.insert(objects, crate)
+            elseif element == 'b' then
+                local blocked = Lock(x, y, TEST_LOCK_FRAME_ID)
+                table.insert(objects, blocked)
             end
         end
     end
@@ -104,6 +108,9 @@ local function assertLevelEquals(actual, expected)
     end
     table.sort(actual.objects, sortObjects)
     table.sort(expected.objects, sortObjects)
+    -- lu.assertEquals(actual.tileMap, expected.tileMap, 'TileMap')
+    -- lu.assertEquals(actual.objects, expected.objects, 'Objects')
+    -- lu.assertEquals(actual.entities, expected.entities, 'Entities')
     lu.assertEquals(actual, expected)
 end
 
@@ -171,11 +178,15 @@ function TestLevelMaker:test_generate_simpleLevel()
     function randomizer:isSpawnGem(column)
         return column == 5
     end
+    function randomizer:isSpawnLock(column)
+        return column == 6
+    end
     function randomizer:getTileset() return TEST_TILESET end
     function randomizer:getTopperset() return TEST_TOPPERSET end
     function randomizer:getBushFrameId() return TEST_BUSH_FRAME_ID end
     function randomizer:getJumpBlockFrameId() return TEST_CRATE_FRAME_ID end
     function randomizer:getGemFrameId() return TEST_GEM_FRAME_ID end
+    function randomizer:getLockFrameId() return TEST_LOCK_FRAME_ID end
 
     local levelMaker = LevelMaker(randomizer)
 
@@ -184,7 +195,7 @@ function TestLevelMaker:test_generate_simpleLevel()
 
     local expected = createGameLevel(width, height, [[
         .......
-        ......o
+        .....bo
         .......
         ....*..
         ._..._^
