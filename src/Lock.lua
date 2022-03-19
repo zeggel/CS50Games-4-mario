@@ -7,7 +7,7 @@ function Lock:init(x, y, frameId)
     self.width = 16
     self.height = 16
 
-    self.frame = frameId
+    self.frame = LOCK_IDS[frameId]
     self.collidable = true
     self.hit = false
     self.solid = true

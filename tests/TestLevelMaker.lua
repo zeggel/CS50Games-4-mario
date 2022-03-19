@@ -79,6 +79,11 @@ local function elementsToObjects(elements)
             elseif element == 'b' then
                 local blocked = Lock(x, y, TEST_LOCK_FRAME_ID)
                 table.insert(objects, blocked)
+            elseif element == 'k' then
+                local key = Key(x, y, TEST_LOCK_FRAME_ID)
+                table.insert(objects, key)
+                local crate = Crate(x, y, TEST_CRATE_FRAME_ID, key)
+                table.insert(objects, crate)
             end
         end
     end
@@ -173,13 +178,16 @@ function TestLevelMaker:test_generate_simpleLevel()
         return column == 7
     end
     function randomizer:isJumpBlock(column)
-        return column == 5 or column == 7
+        return column == 2 or column == 5 or column == 7
     end
     function randomizer:isSpawnGem(column)
         return column == 5
     end
     function randomizer:isSpawnLock(column)
         return column == 6
+    end
+    function randomizer:isSpawnKey(column)
+        return column == 2
     end
     function randomizer:getTileset() return TEST_TILESET end
     function randomizer:getTopperset() return TEST_TOPPERSET end
@@ -195,7 +203,7 @@ function TestLevelMaker:test_generate_simpleLevel()
 
     local expected = createGameLevel(width, height, [[
         .......
-        .....bo
+        .k...bo
         .......
         ....*..
         ._..._^

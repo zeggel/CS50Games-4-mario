@@ -21,6 +21,7 @@ function LevelMaker:generate(width, height)
 
     local tileID = TILE_ID_GROUND
 
+    local keySpawned = false
     local lockSpawned = false
     local lockFrameId = self.randomizer:getLockFrameId()
     
@@ -104,12 +105,16 @@ function LevelMaker:generate(width, height)
 
             -- chance to spawn a block
             if self.randomizer:isJumpBlock(x) then
-                local gem
-                if self.randomizer:isSpawnGem(x) then
-                    gem = Gem(x, blockHeight, self.randomizer:getGemFrameId())
-                    table.insert(objects, gem)
+                local inner
+                if not keySpawned and self.randomizer:isSpawnKey(x) then
+                    inner = Key(x, blockHeight, lockFrameId)
+                    table.insert(objects, inner)
+                    keySpawned = true
+                elseif self.randomizer:isSpawnGem(x) then
+                    inner = Gem(x, blockHeight, self.randomizer:getGemFrameId())
+                    table.insert(objects, inner)
                 end
-                local crate = Crate(x, blockHeight, self.randomizer:getJumpBlockFrameId(), gem)
+                local crate = Crate(x, blockHeight, self.randomizer:getJumpBlockFrameId(), inner)
                 table.insert(objects, crate)
             elseif not lockSpawned and self.randomizer:isSpawnLock(x) then
                 local lock = Lock(x, blockHeight, lockFrameId)

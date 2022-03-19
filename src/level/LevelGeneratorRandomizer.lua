@@ -72,5 +72,9 @@ function LevelGeneratorRandomizer:isSpawnLock(column)
 end
 
 function LevelGeneratorRandomizer:getLockFrameId()
-    return LOCK_IDS[math.random(#LOCK_IDS)]
+    return math.random(#LOCK_IDS)
+end
+
+function LevelGeneratorRandomizer:isSpawnKey(column)
+    return math.random(5) == 1
 end
