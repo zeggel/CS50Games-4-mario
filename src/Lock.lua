@@ -19,7 +19,7 @@ function Lock:onCollide()
 end
 
 function Lock:onConsume(player)
-    
+    gSounds['powerup-reveal']:play()
 end
 
 function Lock:collides(target)

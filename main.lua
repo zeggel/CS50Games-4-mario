@@ -32,6 +32,8 @@ function love.load(args)
     love.graphics.setFont(gFonts['medium'])
     love.window.setTitle('Super 50 Bros.')
 
+    love.audio.setVolume(0.1)
+
     math.randomseed(os.time())
     
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
