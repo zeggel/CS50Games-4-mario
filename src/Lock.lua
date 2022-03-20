@@ -8,11 +8,24 @@ function Lock:init(x, y, frameId)
     self.height = 16
 
     self.frame = LOCK_IDS[frameId]
+    self.consumable = true
     self.collidable = true
     self.hit = false
     self.solid = true
 end
 
 function Lock:onCollide()
+    gSounds['empty-block']:play()
+end
+
+function Lock:onConsume(player)
     
+end
+
+function Lock:collides(target)
+    local collides = GameObject.collides(self, target)
+    if collides and target.hasKey then
+        self.solid = false
+    end
+    return collides
 end
