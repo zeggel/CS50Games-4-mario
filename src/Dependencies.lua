@@ -42,6 +42,9 @@ require 'src/states/entity/snail/SnailChasingState'
 require 'src/states/entity/snail/SnailIdleState'
 require 'src/states/entity/snail/SnailMovingState'
 
+require 'src/states/entity/flag/FlagIdleState'
+require 'src/states/entity/flag/FlagActiveState'
+
 -- general
 require 'src/Animation'
 require 'src/Entity'
@@ -58,6 +61,7 @@ require 'src/Tile'
 require 'src/TileMap'
 require 'src/level/LevelGeneratorRandomizer'
 require 'src/Pole'
+require 'src/Flag'
 
 
 gSounds = {
@@ -97,6 +101,7 @@ gFrames = {
     ['creatures'] = GenerateQuads(gTextures['creatures'], 16, 16),
     ['keys-and-locks'] = GenerateQuads(gTextures['keys-and-locks'], 16, 16),
     ['poles'] = GenerateQuads(gTextures['poles-and-flags'], 16, 48),
+    ['flags'] = GenerateQuads(gTextures['poles-and-flags'], 16, 16)
 }
 
 -- these need to be added after gFrames is initialized because they refer to gFrames from within

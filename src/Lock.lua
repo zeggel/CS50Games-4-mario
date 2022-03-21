@@ -20,6 +20,7 @@ end
 
 function Lock:onConsume(player)
     gSounds['powerup-reveal']:play()
+    player.levelUnlocked = true
 end
 
 function Lock:collides(target)

@@ -10,7 +10,7 @@ PlayState = Class{__includes = BaseState}
 function PlayState:init(levelMaker)
     self.camX = 0
     self.camY = 0
-    self.level = levelMaker:generate(100, 10)
+    self.level = levelMaker:generate(20, 10)
     self.tileMap = self.level.tileMap
     self.background = math.random(3)
     self.backgroundX = 0
@@ -33,6 +33,7 @@ function PlayState:init(levelMaker)
     })
 
     self:spawnEnemies()
+    self:spawnFlag()
 
     self.player:changeState('falling')
 end
@@ -134,4 +135,25 @@ function PlayState:spawnEnemies()
             end
         end
     end
+end
+
+function PlayState:spawnFlag()
+    local x = self.tileMap.width - 1
+    local flag
+    flag = Flag {
+        texture = 'poles-and-flags',
+        x = (x - 1) * TILE_SIZE,
+        y = 3 * TILE_SIZE,
+        width = 16,
+        height = 16,
+        stateMachine = StateMachine {
+            ['idle'] = function() return FlagIdleState(self.tileMap, self.player, flag) end,
+            ['active'] = function() return FlagActiveState(self.tileMap, self.player, flag) end,
+        }
+    }
+    flag:changeState('idle', {
+        wait = math.random(5)
+    })
+
+    table.insert(self.level.entities, flag)
 end
