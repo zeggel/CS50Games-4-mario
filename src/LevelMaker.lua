@@ -35,8 +35,24 @@ function LevelMaker:generate(width, height)
         table.insert(tiles, {})
     end
 
+    for x = 1, 3 do
+        local tileID = TILE_ID_EMPTY
+
+        -- lay out the empty space
+        for y = 1, 6 do
+            table.insert(tiles[y],
+                Tile(x, y, tileID, nil, tileset, topperset))
+        end
+
+        tileID = TILE_ID_GROUND
+        for y = 7, height do
+            table.insert(tiles[y],
+                Tile(x, y, tileID, y == 7 and topper or nil, tileset, topperset))
+        end
+    end
+
     -- column by column generation instead of row; sometimes better for platformers
-    for x = 1, width do
+    for x = 4, width - 3 do
         local tileID = TILE_ID_EMPTY
         
         -- lay out the empty space
@@ -121,6 +137,27 @@ function LevelMaker:generate(width, height)
                 table.insert(objects, lock)
                 lockSpawned = true
             end
+        end
+    end
+
+    for x = width - 2, width do
+        local tileID = TILE_ID_EMPTY
+
+        -- lay out the empty space
+        for y = 1, 6 do
+            table.insert(tiles[y],
+                Tile(x, y, tileID, nil, tileset, topperset))
+        end
+
+        tileID = TILE_ID_GROUND
+        for y = 7, height do
+            table.insert(tiles[y],
+                Tile(x, y, tileID, y == 7 and topper or nil, tileset, topperset))
+        end
+
+        local blockHeight = 4
+        if x == width - 1 then
+            table.insert(objects, Pole(x, blockHeight, self.randomizer:getPoleFrameId()))
         end
     end
 

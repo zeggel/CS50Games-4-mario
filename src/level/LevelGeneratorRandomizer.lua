@@ -78,3 +78,7 @@ end
 function LevelGeneratorRandomizer:isSpawnKey(column)
     return math.random(5) == 1
 end
+
+function LevelGeneratorRandomizer:getPoleFrameId()
+    return math.random(#POLE_IDS)
+end
