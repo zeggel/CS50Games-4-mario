@@ -8,15 +8,22 @@
 PlayState = Class{__includes = BaseState}
 
 function PlayState:init(levelMaker)
+    self.levelMaker = levelMaker
     self.camX = 0
     self.camY = 0
-    self.level = levelMaker:generate(100, 10)
-    self.tileMap = self.level.tileMap
+    -- self.level = levelMaker:generate(100, 10)
+    
     self.background = math.random(3)
     self.backgroundX = 0
 
     self.gravityOn = true
     self.gravityAmount = 6
+end
+
+function PlayState:enter(params)
+    self.width = params.width
+    self.level = self.levelMaker:generate(params.width, 10)
+    self.tileMap = self.level.tileMap
 
     self.player = Player({
         x = 0, y = 0,
@@ -29,7 +36,8 @@ function PlayState:init(levelMaker)
             ['falling'] = function() return PlayerFallingState(self.player, self.gravityAmount) end
         },
         map = self.tileMap,
-        level = self.level
+        level = self.level,
+        score = params.score
     })
 
     self:spawnEnemies()

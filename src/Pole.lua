@@ -14,7 +14,10 @@ end
 
 function Pole:onConsume(player)
     if player.levelUnlocked then
-        gStateMachine:change('play')
+        gStateMachine:change('play', {
+            width = gStateMachine.current.width + 10,
+            score = player.score
+        })
     end
 end
 
