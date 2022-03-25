@@ -12,6 +12,20 @@ function Pole:init(x, y, frameId)
     self.solid = false
 end
 
+function Pole:onConsume(player)
+    if player.levelUnlocked then
+        gStateMachine:change('play')
+    end
+end
+
 function Pole:render()
     love.graphics.draw(gTextures[self.texture], gFrames['poles'][self.frame], self.x, self.y)
+end
+
+function Pole:collides(target)
+    local collides = GameObject.collides(self, target)
+    if collides and target.levelUnlocked then
+        self.consumable = true
+    end
+    return collides
 end
