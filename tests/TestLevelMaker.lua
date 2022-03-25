@@ -9,6 +9,7 @@ local lu = require 'lib/luaunit'
     * gem crate
     b blocked
     k key crate
+    | pole, real y coor less by 2
 --]]
 
 local TEST_TILESET = 1
@@ -17,6 +18,7 @@ local TEST_BUSH_FRAME_ID = 3
 local TEST_CRATE_FRAME_ID = 4
 local TEST_GEM_FRAME_ID = 5
 local TEST_LOCK_FRAME_ID = 6
+local TEST_POLE_FRAME_ID = 1
 
 local function schemaToElements(schema)
     local result = {}
@@ -84,6 +86,9 @@ local function elementsToObjects(elements)
                 table.insert(objects, key)
                 local crate = Crate(x, y, TEST_CRATE_FRAME_ID, key)
                 table.insert(objects, crate)
+            elseif element == '|' then
+                local pole = Pole(x, y - 2, TEST_POLE_FRAME_ID)
+                table.insert(objects, pole)
             end
         end
     end
@@ -121,7 +126,7 @@ end
 
 TestLevelMaker = {}
 
-function TestLevelMaker:test_generate_oneGroundColumnWithoutObjects()
+function TestLevelMaker:test_generate_onlyGroundLevelWithoutObjects()
     local FakeRandomizer = Class{__includes = LevelGeneratorRandomizer}
     local randomizer = FakeRandomizer()
     function randomizer:isChasm() return false end
@@ -130,10 +135,11 @@ function TestLevelMaker:test_generate_oneGroundColumnWithoutObjects()
     function randomizer:isJumpBlock() return false end
     function randomizer:getTileset() return TEST_TILESET end
     function randomizer:getTopperset() return TEST_TOPPERSET end
+    function randomizer:getPoleFrameId() return TEST_POLE_FRAME_ID end
 
     local levelMaker = LevelMaker(randomizer)
 
-    local width = 1
+    local width = 6
     local height = 9
 
     local tiles = {
@@ -148,15 +154,15 @@ function TestLevelMaker:test_generate_oneGroundColumnWithoutObjects()
         {Tile(1, 9, TILE_ID_GROUND, nil, TEST_TILESET, TEST_TOPPERSET)},
     }
     local expected = createGameLevel(width, height, [[
-        .
-        .
-        .
-        .
-        .
-        .
-        _
-        #
-        #
+        ......
+        ......
+        ......
+        ......
+        ......
+        ....|.
+        ______
+        ######
+        ######
     ]])
 
     lu.assertEquals(levelMaker:generate(width, height), expected)
@@ -166,28 +172,28 @@ function TestLevelMaker:test_generate_simpleLevel()
     local FakeRandomizer = Class{__includes = LevelGeneratorRandomizer}
     local randomizer = FakeRandomizer()
     function randomizer:isChasm(column)
-        return column == 3 or column == 4
+        return column == 6 or column == 7
     end
     function randomizer:isPillar(column)
-        return column == 2 or column == 6 or column == 7
+        return column == 5 or column == 9 or column == 10
     end
     function randomizer:isBush(column)
-        return column == 5
+        return column == 8
     end
     function randomizer:isBushOnPillar(column)
-        return column == 7
+        return column == 10
     end
     function randomizer:isJumpBlock(column)
-        return column == 2 or column == 5 or column == 7
+        return column == 5 or column == 8 or column == 10
     end
     function randomizer:isSpawnGem(column)
-        return column == 5
+        return column == 8
     end
     function randomizer:isSpawnLock(column)
-        return column == 6
+        return column == 9
     end
     function randomizer:isSpawnKey(column)
-        return column == 2
+        return column == 5
     end
     function randomizer:getTileset() return TEST_TILESET end
     function randomizer:getTopperset() return TEST_TOPPERSET end
@@ -195,22 +201,23 @@ function TestLevelMaker:test_generate_simpleLevel()
     function randomizer:getJumpBlockFrameId() return TEST_CRATE_FRAME_ID end
     function randomizer:getGemFrameId() return TEST_GEM_FRAME_ID end
     function randomizer:getLockFrameId() return TEST_LOCK_FRAME_ID end
+    function randomizer:getPoleFrameId() return TEST_POLE_FRAME_ID end
 
     local levelMaker = LevelMaker(randomizer)
 
-    local width = 7
+    local width = 13
     local height = 9
 
     local expected = createGameLevel(width, height, [[
-        .......
-        .k...bo
-        .......
-        ....*..
-        ._..._^
-        .#...##
-        _#..^##
-        ##..###
-        ##..###
+        .............
+        ....k...bo...
+        .............
+        .......*.....
+        ...._..._^...
+        ....#...##.|.
+        ____#..^##___
+        #####..######
+        #####..######
     ]])
 
     assertLevelEquals(levelMaker:generate(width, height), expected)
