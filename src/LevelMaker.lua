@@ -120,9 +120,13 @@ function LevelMaker:generate(width, height)
             end
 
             -- chance to spawn a block
-            if self.randomizer:isJumpBlock(x) then
+            if not lockSpawned and self.randomizer:isSpawnLock(x, width) then
+                local lock = Lock(x, blockHeight, lockFrameId)
+                table.insert(objects, lock)
+                lockSpawned = true
+            elseif self.randomizer:isJumpBlock(x) then
                 local inner
-                if not keySpawned and self.randomizer:isSpawnKey(x) then
+                if not keySpawned and self.randomizer:isSpawnKey(x, width) then
                     inner = Key(x, blockHeight, lockFrameId)
                     table.insert(objects, inner)
                     keySpawned = true
@@ -132,10 +136,6 @@ function LevelMaker:generate(width, height)
                 end
                 local crate = Crate(x, blockHeight, self.randomizer:getJumpBlockFrameId(), inner)
                 table.insert(objects, crate)
-            elseif not lockSpawned and self.randomizer:isSpawnLock(x) then
-                local lock = Lock(x, blockHeight, lockFrameId)
-                table.insert(objects, lock)
-                lockSpawned = true
             end
         end
     end

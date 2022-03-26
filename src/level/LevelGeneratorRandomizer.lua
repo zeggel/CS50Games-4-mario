@@ -67,16 +67,18 @@ function LevelGeneratorRandomizer:isBush(column)
     return math.random(8) == 1
 end
 
-function LevelGeneratorRandomizer:isSpawnLock(column)
-    return math.random(5) == 1
+function LevelGeneratorRandomizer:isSpawnLock(column, width)
+    return (column > width * 0.8 and math.random(5) == 1)
+        or column > width * 0.9
 end
 
 function LevelGeneratorRandomizer:getLockFrameId()
     return math.random(#LOCK_IDS)
 end
 
-function LevelGeneratorRandomizer:isSpawnKey(column)
-    return math.random(5) == 1
+function LevelGeneratorRandomizer:isSpawnKey(column, width)
+    return ((column > width * 0.2) and math.random(5) == 1)
+        or column > width * 0.6
 end
 
 function LevelGeneratorRandomizer:getPoleFrameId()
