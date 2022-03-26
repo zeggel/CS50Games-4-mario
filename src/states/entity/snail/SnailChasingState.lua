@@ -28,7 +28,7 @@ function SnailChasingState:update(dt)
 
     if diffX > 5 * TILE_SIZE then
         self.snail:changeState('moving')
-    elseif self.player.x < self.snail.x then
+    elseif self.player.x + 1 < self.snail.x then
         self.snail.direction = 'left'
         self.snail.x = self.snail.x - SNAIL_MOVE_SPEED * dt
 
@@ -39,7 +39,7 @@ function SnailChasingState:update(dt)
         if (tileLeft and tileBottomLeft) and (tileLeft:collidable() or not tileBottomLeft:collidable()) then
             self.snail.x = self.snail.x + SNAIL_MOVE_SPEED * dt
         end
-    else
+    elseif self.player.x - 1 > self.snail.x then
         self.snail.direction = 'right'
         self.snail.x = self.snail.x + SNAIL_MOVE_SPEED * dt
 
