@@ -46,22 +46,25 @@ require 'src/states/entity/flag/FlagIdleState'
 require 'src/states/entity/flag/FlagActiveState'
 
 -- general
-require 'src/states/Animation'
 require 'src/entities/Entity'
+require 'src/entities/Flag'
+require 'src/entities/Player'
+require 'src/entities/Snail'
+
+require 'src/level/GameLevel'
+require 'src/level/LevelGeneratorRandomizer'
+require 'src/level/LevelMaker'
+require 'src/level/Tile'
+require 'src/level/TileMap'
+
 require 'src/objects/GameObject'
 require 'src/objects/Crate'
 require 'src/objects/Gem'
-require 'src/objects/Lock'
 require 'src/objects/Key'
-require 'src/level/GameLevel'
-require 'src/level/LevelMaker'
-require 'src/entities/Player'
-require 'src/entities/Snail'
-require 'src/level/Tile'
-require 'src/level/TileMap'
-require 'src/level/LevelGeneratorRandomizer'
+require 'src/objects/Lock'
 require 'src/objects/Pole'
-require 'src/entities/Flag'
+
+require 'src/states/Animation'
 
 
 gSounds = {
