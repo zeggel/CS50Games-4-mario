@@ -24,7 +24,7 @@ Timer = require 'lib/knife.timer'
 
 -- utility
 require 'src/constants'
-require 'src/StateMachine'
+require 'src/states/StateMachine'
 require 'src/Util'
 
 -- game states
@@ -46,7 +46,7 @@ require 'src/states/entity/flag/FlagIdleState'
 require 'src/states/entity/flag/FlagActiveState'
 
 -- general
-require 'src/Animation'
+require 'src/states/Animation'
 require 'src/entities/Entity'
 require 'src/objects/GameObject'
 require 'src/objects/Crate'
